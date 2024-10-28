@@ -1,5 +1,5 @@
-from type_parser import EntityType, parse_type
-from metadata_parser import parse_metadata
+from data_parser.type_parser import EntityType, parse_type
+from data_parser.metadata_parser import parse_metadata
 
 
 class Entity:

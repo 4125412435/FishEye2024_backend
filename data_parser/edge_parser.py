@@ -1,5 +1,5 @@
-from type_parser import EventType, parse_type
-from metadata_parser import parse_metadata
+from data_parser.type_parser import EventType, parse_type
+from data_parser.metadata_parser import parse_metadata
 
 
 class Event:
@@ -13,7 +13,7 @@ class Event:
 
 class Transaction(Event):
     def __init__(self, metadata, date, source, target, key):
-        super(Event, self).__init__(EventType.Transaction, metadata, source, target, key)
+        super(Transaction, self).__init__(EventType.Transaction, metadata, source, target, key)
         self.date = date
 
 
@@ -35,7 +35,7 @@ class TransponderPing(Event):
         self.dwell = dwell
 
 
-def parse_node(json_node):
+def parse_edge(json_node):
     edge_type = parse_type(json_node['type'])
     metadata = parse_metadata(json_node)
     date = json_node.get('date', None)
