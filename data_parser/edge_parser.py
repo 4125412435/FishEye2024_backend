@@ -1,6 +1,6 @@
 from data_parser.type_parser import EventType, parse_type
 from data_parser.metadata_parser import parse_metadata
-
+from dateutil import parser
 
 class Event:
     def __init__(self, event_type, metadata, source, target, key):
@@ -39,7 +39,9 @@ def parse_edge(json_node):
     edge_type = parse_type(json_node['type'])
     metadata = parse_metadata(json_node)
     date = json_node.get('date', None)
+    date = parser.parse(date) if date is not None else None
     time = json_node.get('time', None)
+    time = parser.parse(time) if time is not None else None
     dwell = json_node.get('dwell', None)
     data_author = json_node.get('data_author', None)
     aphorism = json_node.get('aphorism', None)

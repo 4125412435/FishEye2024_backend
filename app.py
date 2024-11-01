@@ -2,17 +2,20 @@ from flask import Flask, request, jsonify
 import service
 from data_parser import EntityType, EventType
 from flask_cors import CORS, cross_origin
+from dateutil import parser
 
 app = Flask(__name__)
 CORS(app)
 service.initialize('./data/MC2/mc2.json', geo_file_path='./data/MC2/Oceanus Information/Oceanus Geography.geojson')
 
 
-@app.route('/mc2/select_transponder_ping')
+@app.route('/mc2/select_transponder_ping', methods=['POST'])
 def select_transponder_ping():  # put application's code here
     data = request.get_json()
-    start_time = data['startTime']
-    end_time = data['endTime']
+    # data = {'startTime': '2035-09-15', 'endTime': '2035-9-29', 'queryType': '1', 'selectedCompany': 'WestRiver Shipping KgaA', 'selectedBoat': 'perchplundererbc0'}
+
+    start_time = parser.parse(data['startTime'])
+    end_time = parser.parse(data['endTime'])
     vessel_id = data['selectedBoat']
     company = data['selectedCompany']
 
@@ -32,7 +35,10 @@ def select_transponder_ping():  # put application's code here
         'vessel': vessel_id,
         'path': path
     }]
+    for r in result:
+        r['path'] = sorted(r['path'], key=lambda t: t['time'])
     return jsonify(result)
+    # return result
 
 
 if __name__ == '__main__':

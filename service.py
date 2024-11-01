@@ -5,6 +5,7 @@ from data_parser import parse_geo_object
 from data_parser.node_parser import *
 from data_parser import EntityType, EventType
 
+
 node_list = []
 edge_list = []
 

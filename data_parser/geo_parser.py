@@ -24,3 +24,4 @@ def parse_geo_object(json):
     # 如果是point就只有一个值 polygon就有多个值
     polygon = json['geometry']['coordinates']
     return GeoFeature(geo_name, geo_type, polygon)
+

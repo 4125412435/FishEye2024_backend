@@ -1,3 +1,5 @@
+from dateutil import parser
+
 class Metadata:
     def __init__(self, last_edited_by, last_edited_date, date_added, raw_source, algorithm):
         self.last_edited_by = last_edited_by
@@ -9,8 +11,8 @@ class Metadata:
 
 def parse_metadata(json_node):
     last_edited_by = json_node['_last_edited_by']
-    last_edited_date = json_node['_last_edited_date']
-    date_added = json_node['_date_added']
+    last_edited_date = parser.parse(json_node['_last_edited_date'])
+    date_added = parser.parse(json_node['_date_added'])
     raw_source = json_node['_raw_source']
     algorithm = json_node['_algorithm']
     return Metadata(last_edited_by, last_edited_date, date_added, raw_source, algorithm)

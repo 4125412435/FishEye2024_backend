@@ -1,6 +1,6 @@
 from data_parser.type_parser import EntityType, parse_type
 from data_parser.metadata_parser import parse_metadata
-
+from dateutil import parser
 
 class Entity:
     def __init__(self, entity_type, metadata):
@@ -161,6 +161,7 @@ def parse_node(json_node):
     elif node_type == EntityType.Vessel_Other:
         return OtherVessel(metadata, flag_country, name, length_overall, id_)
     elif node_type == EntityType.Document_DeliveryReport:
+        date = parser.parse(date)
         return DeliveryReport(metadata, qty_tons, date, id_)
     else:
         raise 'Error parsing node'
