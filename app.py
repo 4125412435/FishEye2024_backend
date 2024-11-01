@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
 import service
 from data_parser import EntityType, EventType
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app)
 service.initialize('./data/MC2/mc2.json', geo_file_path='./data/MC2/Oceanus Information/Oceanus Geography.geojson')
 
 
@@ -20,8 +22,8 @@ def select_transponder_ping():  # put application's code here
 
     path = []
     for ping in results:
-        if ping.source == vessel_id:
-            location_id = ping.target
+        if ping.target == vessel_id:
+            location_id = ping.source
             geo_feature = service.select_geo_by_id(location_id)
             time = ping.time
             x, y = geo_feature.center()
