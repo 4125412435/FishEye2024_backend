@@ -4,13 +4,21 @@ from data_parser.metadata_parser import parse_metadata
 
 class Entity:
     def __init__(self, entity_type, metadata):
-        self.entity_type = entity_type
+        self.type = entity_type
         self.metadata = metadata
 
 
-class CargoVessel(Entity):
+class Vessel(Entity):
+    def __init__(self, vessel_type, metadata, flag_country, name, vessel_id):
+        super(Vessel, self).__init__(vessel_type, metadata)
+        self.flag_country = flag_country
+        self.name = name
+        self.id = vessel_id
+
+
+class CargoVessel(Vessel):
     def __init__(self, metadata, flag_country, tonnage, name, length_overall, vessel_id):
-        super(CargoVessel, self).__init__(EntityType.Vessel_CargoVessel, metadata)
+        super(CargoVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.tonnage = tonnage
         self.name = name
@@ -18,9 +26,9 @@ class CargoVessel(Entity):
         self.id = vessel_id
 
 
-class FishingVessel(Entity):
+class FishingVessel(Vessel):
     def __init__(self, metadata, flag_country, company, tonnage, name, length_overall, vessel_id):
-        super(FishingVessel, self).__init__(EntityType.Vessel_FishingVessel, metadata)
+        super(FishingVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.company = company
         self.tonnage = tonnage
@@ -29,42 +37,42 @@ class FishingVessel(Entity):
         self.id = vessel_id
 
 
-class OtherVessel(Entity):
+class OtherVessel(Vessel):
     def __init__(self, metadata, flag_country, name, length_overall, vessel_id):
-        super(OtherVessel, self).__init__(EntityType.Vessel_Other, metadata)
+        super(OtherVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.name = name
         self.length_overall = length_overall
         self.id = vessel_id
 
 
-class FerryPassengerVessel(Entity):
+class FerryPassengerVessel(Vessel):
     def __init__(self, metadata, flag_country, name, vessel_id):
-        super(FerryPassengerVessel, self).__init__(EntityType.Vessel_Ferry_Passenger, metadata)
+        super(FerryPassengerVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.name = name
         self.id = vessel_id
 
 
-class FerryCargoVessel(Entity):
+class FerryCargoVessel(Vessel):
     def __init__(self, metadata, flag_country, name, vessel_id):
-        super(FerryCargoVessel, self).__init__(EntityType.Vessel_Ferry_Cargo, metadata)
+        super(FerryCargoVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.name = name
         self.id = vessel_id
 
 
-class ResearchVessel(Entity):
+class ResearchVessel(Vessel):
     def __init__(self, metadata, flag_country, name, vessel_id):
-        super(ResearchVessel, self).__init__(EntityType.Vessel_Research, metadata)
+        super(ResearchVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.name = name
         self.id = vessel_id
 
 
-class TourVessel(Entity):
+class TourVessel(Vessel):
     def __init__(self, metadata, flag_country, name, vessel_id):
-        super(TourVessel, self).__init__(EntityType.Vessel_Tour, metadata)
+        super(TourVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.name = name
         self.id = vessel_id
@@ -77,35 +85,32 @@ class Fish(Entity):
         self.id = fish_id
 
 
-class Point(Entity):
+class Location(Entity):
+    def __init__(self, location_type, metadata, name, description, activity_list, kind, location_id):
+        super(Location, self).__init__(location_type, metadata)
+        self.name = name
+        self.description = description
+        self.activity_list = activity_list
+        self.kind = kind
+        self.id = location_id
+
+
+class Point(Location):
     def __init__(self, metadata, name, description, activity_list, kind, point_id):
-        super(Point, self).__init__(EntityType.Location_Point, metadata)
-        self.name = name
-        self.description = description
-        self.activity_list = activity_list
-        self.kind = kind
-        self.id = point_id
+        super(Point, self).__init__(EntityType.Location_Point, metadata, name, description, activity_list, kind,
+                                    point_id)
 
 
-class City(Entity):
+class City(Location):
     def __init__(self, metadata, name, description, activity_list, kind, city_id):
-        super(City, self).__init__(EntityType.Location_City, metadata)
-        self.name = name
-        self.description = description
-        self.activity_list = activity_list
-        self.kind = kind
-        self.id = city_id
+        super(City, self).__init__(EntityType.Location_City, metadata, name, description, activity_list, kind, city_id)
 
 
-class Region(Entity):
+class Region(Location):
     def __init__(self, metadata, name, description, fish_species_present, activity_list, kind, region_id):
-        super(Region, self).__init__(EntityType.Location_Region, metadata)
-        self.name = name
-        self.description = description
+        super(Region, self).__init__(EntityType.Location_Region, metadata, name, description, activity_list, kind,
+                                     region_id)
         self.fish_species_present = fish_species_present
-        self.activity_list = activity_list
-        self.kind = kind
-        self.id = region_id
 
 
 class DeliveryReport(Entity):

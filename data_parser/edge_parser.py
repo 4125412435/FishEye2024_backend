@@ -4,7 +4,7 @@ from data_parser.metadata_parser import parse_metadata
 
 class Event:
     def __init__(self, event_type, metadata, source, target, key):
-        self.event_type = event_type
+        self.type = event_type
         self.metadata = metadata
         self.source = source
         self.target = target
