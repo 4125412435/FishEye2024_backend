@@ -51,10 +51,10 @@ def initialize(data_file_path, geo_file_path, num_workers=8):
         data = json.load(f)
 
     # 使用 ProcessPoolExecutor 进行并行处理
-    with ProcessPoolExecutor(max_workers=8) as executor:
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
         # 分割节点
         num_nodes = len(data['nodes'])
-        chunk_size_nodes = max(1, num_nodes // 8)
+        chunk_size_nodes = max(1, num_nodes // num_workers)
         node_chunks = [data['nodes'][i:i + chunk_size_nodes] for i in range(0, num_nodes, chunk_size_nodes)]
 
         # 提交节点处理任务并收集结果
@@ -69,7 +69,7 @@ def initialize(data_file_path, geo_file_path, num_workers=8):
 
         # 分割边
         num_edges = len(data['links'])
-        chunk_size_edges = max(1, num_edges // 6)
+        chunk_size_edges = max(1, num_edges // num_workers)
         edge_chunks = [data['links'][i:i + chunk_size_edges] for i in range(0, num_edges, chunk_size_edges)]
 
         # 提交边处理任务并收集结果

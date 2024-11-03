@@ -9,7 +9,7 @@ from dateutil import parser
 if __name__ == 'app':
     time1 = time.time()
     service.initialize('./data/MC2/mc2.json', geo_file_path='./data/MC2/Oceanus Information/Oceanus Geography.geojson',
-                       num_workers=8)
+                       num_workers=10)
     time2 = time.time()
     print('load node:', len(service.node_list))
     print('load edge:', len(service.edge_list))
