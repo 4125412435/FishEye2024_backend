@@ -1,12 +1,22 @@
+import time
+
 from flask import Flask, request, jsonify
 import service
 from data_parser import EntityType, EventType
 from flask_cors import CORS, cross_origin
 from dateutil import parser
 
+if __name__ == 'app':
+    time1 = time.time()
+    service.initialize('./data/MC2/mc2.json', geo_file_path='./data/MC2/Oceanus Information/Oceanus Geography.geojson',
+                       num_workers=8)
+    time2 = time.time()
+    print('load node:', len(service.node_list))
+    print('load edge:', len(service.edge_list))
+    print('cost time:', time2 - time1, 's')
+
 app = Flask(__name__)
 CORS(app)
-service.initialize('./data/MC2/mc2.json', geo_file_path='./data/MC2/Oceanus Information/Oceanus Geography.geojson')
 
 
 @app.route('/mc2/select_transponder_ping', methods=['POST'])
@@ -39,7 +49,6 @@ def select_transponder_ping():  # put application's code here
         r['path'] = sorted(r['path'], key=lambda t: t['time'])
     return jsonify(result)
     # return result
-
 
 if __name__ == '__main__':
     app.run()

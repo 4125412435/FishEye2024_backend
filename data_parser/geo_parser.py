@@ -5,16 +5,30 @@ class GeoFeature:
         self.polygon = polygon
 
     def center(self):
-        x, y = 0, 0
+        centroid_x, centroid_y = 0, 0
         if self.type == 'Polygon':
-            for p in self.polygon[0]:
-                x += p[0]
-                y += p[1]
-            x, y = x / len(self.polygon[0]), y / len(self.polygon[0])
+            area = 0
+            centroid_x = 0
+            centroid_y = 0
+            num_points = len(self.polygon[0])
+
+            for i in range(num_points):
+                x1, y1 = self.polygon[0][i]
+                x2, y2 = self.polygon[0][(i + 1) % num_points]
+                partial_area = x1 * y2 - x2 * y1
+                area += partial_area
+                centroid_x += (x1 + x2) * partial_area
+                centroid_y += (y1 + y2) * partial_area
+
+            area /= 2
+            centroid_x /= (6 * area)
+            centroid_y /= (6 * area)
+
+
         elif self.type == 'Point':
-            x += self.polygon[0]
-            y += self.polygon[1]
-        return x, y
+            centroid_x += self.polygon[0]
+            centroid_y += self.polygon[1]
+        return centroid_x, centroid_y
 
 
 def parse_geo_object(json):
