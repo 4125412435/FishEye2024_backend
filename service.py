@@ -1,7 +1,9 @@
+import datetime
 import json
 import time
 from concurrent.futures import ProcessPoolExecutor
 
+import data_parser.type_parser
 from data_parser import parse_node
 from data_parser import parse_edge
 from data_parser import parse_geo_object
@@ -89,32 +91,6 @@ def initialize(data_file_path, geo_file_path, num_workers=8):
             name2geo[n.id] = n
 
 
-# def initialize(data_file_path, geo_file_path):
-#     node_list.clear()
-#     edge_list.clear()
-#     id2vessel.clear()
-#     with open(data_file_path, 'r') as f:
-#         data = json.load(f)
-#         for node in data['nodes']:
-#             n = parse_node(node)
-#             # 如果是船
-#             if isinstance(n, Vessel):
-#                 id2vessel[n.id] = n
-#             elif isinstance(n, Location):
-#                 id2location[n.id] = n
-#             node_list.append(n)
-#         for edge in data['links']:
-#             e = parse_edge(edge)
-#             edge_list.append(e)
-#
-#     name2geo.clear()
-#     with open(geo_file_path, 'r') as f:
-#         data = json.load(f)
-#         for node in data['features']:
-#             n = parse_geo_object(node)
-#             name2geo[n.id] = n
-
-
 def select_nodes(func):
     results = []
     for node in node_list:
@@ -161,21 +137,30 @@ def select_geo_by_id(location_id):
     location = id2location[location_id]
     return name2geo[location.name]
 
-# if __name__ == '__main__':
-# t1 = time.time()
-# initialize('./data/MC2/mc2.json', geo_file_path='./data/MC2/Oceanus Information/Oceanus Geography.geojson')
-# t2 = time.time()
-# print('Cost ', t2 - t1)
-# print(len(node_list))
-# print(len(edge_list))
 
-#
-# start_time = '2035-05-06'
-# end_time = '2035-08-29'
-# results = select_edge_attribute(EventType.TransportEvent_TransponderPing, attribute='time',
-#                                 func=lambda x: start_time <= x <= end_time
-#                                 )
-# print(len(results))
-# print(results[0].__dict__)
-# start_time = '2035-06-05'
-# print(start_time <= results[0].time <= end_time)
+def select_fishing_vessel_by_company(company):
+    results = []
+    for vessel in id2vessel.values():
+        if vessel.type == EntityType.Vessel_FishingVessel:
+            if vessel.company == company:
+                results.append(vessel)
+
+    return results
+
+
+if __name__ == '__main__':
+    t1 = time.time()
+    initialize('./data/MC2/mc2.json', geo_file_path='./data/MC2/Oceanus Information/Oceanus Geography.geojson')
+    t2 = time.time()
+    print('Cost ', t2 - t1)
+    result = []
+    for edge in edge_list:
+        if edge.type == data_parser.type_parser.EventType.TransportEvent_TransponderPing:
+            result.append({
+                'start_time': edge.time.isoformat(),
+                'end_time': (edge.time + datetime.timedelta(seconds=edge.dwell)).isoformat(),
+                'vessel_id': edge.target,
+                'location_id': edge.source
+            })
+    with open("data_zs.json", "w", encoding="utf-8") as f:
+        json.dump(result, f, ensure_ascii=False, indent=4)
