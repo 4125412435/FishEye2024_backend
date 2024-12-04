@@ -18,7 +18,7 @@ class Vessel(Entity):
 
 class CargoVessel(Vessel):
     def __init__(self, metadata, flag_country, tonnage, name, length_overall, vessel_id):
-        super(CargoVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
+        super(CargoVessel, self).__init__(EntityType.Vessel_CargoVessel, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.tonnage = tonnage
         self.name = name
@@ -28,7 +28,7 @@ class CargoVessel(Vessel):
 
 class FishingVessel(Vessel):
     def __init__(self, metadata, flag_country, company, tonnage, name, length_overall, vessel_id):
-        super(FishingVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
+        super(FishingVessel, self).__init__(EntityType.Vessel_FishingVessel, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.company = company
         self.tonnage = tonnage
@@ -39,7 +39,7 @@ class FishingVessel(Vessel):
 
 class OtherVessel(Vessel):
     def __init__(self, metadata, flag_country, name, length_overall, vessel_id):
-        super(OtherVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
+        super(OtherVessel, self).__init__(EntityType.Vessel_Other, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.name = name
         self.length_overall = length_overall
@@ -48,7 +48,7 @@ class OtherVessel(Vessel):
 
 class FerryPassengerVessel(Vessel):
     def __init__(self, metadata, flag_country, name, vessel_id):
-        super(FerryPassengerVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
+        super(FerryPassengerVessel, self).__init__(EntityType.Vessel_Ferry_Passenger, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.name = name
         self.id = vessel_id
@@ -56,7 +56,7 @@ class FerryPassengerVessel(Vessel):
 
 class FerryCargoVessel(Vessel):
     def __init__(self, metadata, flag_country, name, vessel_id):
-        super(FerryCargoVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
+        super(FerryCargoVessel, self).__init__(EntityType.Vessel_Ferry_Cargo, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.name = name
         self.id = vessel_id
@@ -64,7 +64,7 @@ class FerryCargoVessel(Vessel):
 
 class ResearchVessel(Vessel):
     def __init__(self, metadata, flag_country, name, vessel_id):
-        super(ResearchVessel, self).__init__(EntityType.Vessel_Tour, metadata, flag_country, name, vessel_id)
+        super(ResearchVessel, self).__init__(EntityType.Vessel_Research, metadata, flag_country, name, vessel_id)
         self.flag_country = flag_country
         self.name = name
         self.id = vessel_id

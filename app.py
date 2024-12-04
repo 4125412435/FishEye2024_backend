@@ -32,7 +32,7 @@ def select_transponder_ping():  # put application's code here
                                             func=lambda x: start_time <= x <= end_time
                                             )
 
-    vessel_id_list = [vessel_id] if vessel_id is not None else [vessel.id for vessel in
+    vessel_id_list = [vessel_id] if vessel_id is not '' else [vessel.id for vessel in
                                                                 service.select_fishing_vessel_by_company(company)]
 
     result = []
@@ -68,7 +68,7 @@ def select_dwell():  # put application's code here
                                             func=lambda x: start_time <= x <= end_time
                                             )
 
-    vessel_id_list = [vessel_id] if vessel_id is not None else [vessel.id for vessel in
+    vessel_id_list = [vessel_id] if vessel_id is not '' else [vessel.id for vessel in
                                                                 service.select_fishing_vessel_by_company(company)]
 
     result = []

@@ -1,14 +1,11 @@
-import datetime
 import json
 import time
 from concurrent.futures import ProcessPoolExecutor
 
-import data_parser.type_parser
-from data_parser import parse_node
+from data_parser import EntityType
 from data_parser import parse_edge
 from data_parser import parse_geo_object
 from data_parser.node_parser import *
-from data_parser import EntityType, EventType
 
 node_list = []
 edge_list = []
@@ -24,7 +21,6 @@ def process_nodes(nodes):
     local_node_list = []
     local_id2vessel = {}
     local_id2location = {}
-
     for node in nodes:
         n = parse_node(node)
         if isinstance(n, Vessel):
@@ -141,26 +137,18 @@ def select_geo_by_id(location_id):
 def select_fishing_vessel_by_company(company):
     results = []
     for vessel in id2vessel.values():
+        print(vessel.type)
         if vessel.type == EntityType.Vessel_FishingVessel:
+
             if vessel.company == company:
                 results.append(vessel)
-
     return results
 
 
-if __name__ == '__main__':
-    t1 = time.time()
-    initialize('./data/MC2/mc2.json', geo_file_path='./data/MC2/Oceanus Information/Oceanus Geography.geojson')
-    t2 = time.time()
-    print('Cost ', t2 - t1)
-    result = []
-    for edge in edge_list:
-        if edge.type == data_parser.type_parser.EventType.TransportEvent_TransponderPing:
-            result.append({
-                'start_time': edge.time.isoformat(),
-                'end_time': (edge.time + datetime.timedelta(seconds=edge.dwell)).isoformat(),
-                'vessel_id': edge.target,
-                'location_id': edge.source
-            })
-    with open("data_zs.json", "w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=4)
+# if __name__ == '__main__':
+#     t1 = time.time()
+#     initialize('./data/MC2/mc2.json', geo_file_path='./data/MC2/Oceanus Information/Oceanus Geography.geojson')
+#     t2 = time.time()
+#     print('Cost ', t2 - t1)
+#     print(id2vessel.items())
+#     print(select_fishing_vessel_by_company('WestRiver Shipping KgaA'))
