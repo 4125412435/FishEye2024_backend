@@ -2,10 +2,11 @@ import json
 import time
 from concurrent.futures import ProcessPoolExecutor
 
-from data_parser import EntityType
+from data_parser import EntityType, EventType
 from data_parser import parse_edge
 from data_parser import parse_geo_object
 from data_parser.node_parser import *
+import numpy as np
 
 node_list = []
 edge_list = []
@@ -137,7 +138,6 @@ def select_geo_by_id(location_id):
 def select_fishing_vessel_by_company(company):
     results = []
     for vessel in id2vessel.values():
-        print(vessel.type)
         if vessel.type == EntityType.Vessel_FishingVessel:
 
             if vessel.company == company:
@@ -145,10 +145,82 @@ def select_fishing_vessel_by_company(company):
     return results
 
 
+def normalize(v):
+    norm = np.linalg.norm(v)
+    if norm == 0:
+        return v
+    return v / norm
+
+
+def select_preserve():
+    result = []
+    for name, l in id2location.items():
+        if l.kind == "Ecological Preserve":
+            result.append(name)
+    return result
+
+
+def select_dwell_vector(vessel_id, norm=False, location_list=None, weight_mapping=None):
+    locations = id2location.keys() if location_list is None else location_list
+    location_idx_mapping = {l: idx for idx, l in enumerate(locations)}
+    location_vector = np.zeros(len(locations))
+    for edge in edge_list:
+        if edge.type == EventType.TransportEvent_TransponderPing:
+            if edge.target == vessel_id:
+                location_name = edge.source
+                if location_name not in location_idx_mapping.keys():
+                    continue
+                dwell = edge.dwell
+                location_vector[location_idx_mapping[location_name]] += dwell * weight_mapping.get(location_name, 1)
+    if norm:
+        location_vector = normalize(location_vector)
+    return location_vector
+
+
+def select_transponder_ping():
+    vessel_transponderping = {}
+    for edge in edge_list:
+        if edge.type == EventType.TransportEvent_TransponderPing:
+            if edge.target not in vessel_transponderping.keys():
+                vessel_transponderping[edge.target] = []
+            vessel_transponderping[edge.target].append({
+                'time': edge.time,
+                'dwell': edge.dwell,
+                'source': edge.source
+            })
+    return vessel_transponderping
+
+def calculate_suspect():
+    preserve_list = select_preserve()
+    weight_mapping = {l: 10 for l in preserve_list}
+    x1 = select_dwell_vector('snappersnatcher7be', norm=False, weight_mapping=weight_mapping)
+    x1 += 50000
+    for idx, l in enumerate(id2location.keys()):
+        if l in preserve_list:
+            x1[idx] += 500000
+    x1 = normalize(x1)
+    result = {}
+    for vessel in id2vessel.values():
+        if vessel.type == EntityType.Vessel_FishingVessel:
+            company = vessel.company
+            v_id = vessel.id
+            d_vector = select_dwell_vector(v_id, norm=True, weight_mapping=weight_mapping)
+            if company == 'SouthSeafood Express Corp':
+                continue
+            if company not in result.keys():
+                result[company] = {'suspect_ratio': 0, 'vessels': {}}
+            suspect_ratio = x1 @ d_vector
+            result[company]['suspect_ratio'] = max(result[company]['suspect_ratio'], suspect_ratio)
+            result[company]['vessels'][v_id] = suspect_ratio
+    with open('suspect.json', 'w') as json_file:
+        json.dump(result, json_file, indent=4)
+
+
 # if __name__ == '__main__':
 #     t1 = time.time()
 #     initialize('./data/MC2/mc2.json', geo_file_path='./data/MC2/Oceanus Information/Oceanus Geography.geojson')
 #     t2 = time.time()
 #     print('Cost ', t2 - t1)
-#     print(id2vessel.items())
-#     print(select_fishing_vessel_by_company('WestRiver Shipping KgaA'))
+# print(id2vessel.items())
+# print(select_fishing_vessel_by_company('WestRiver Shipping KgaA'))
+# calculate_suspect()

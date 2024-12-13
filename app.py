@@ -1,10 +1,11 @@
 import time
 
-from flask import Flask, request, jsonify
-import service
-from data_parser import EntityType, EventType
-from flask_cors import CORS, cross_origin
 from dateutil import parser
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+import service
+from data_parser import EventType
 
 if __name__ == 'app':
     time1 = time.time()
